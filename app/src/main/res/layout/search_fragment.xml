@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SearchFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.ouattararomuald.slider.ImageSlider
+                android:id="@+id/search_image_slider"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginTop="4dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/search_trending_recycler_view"
+                android:layout_width="match_parent"
+
+                android:layout_height="wrap_content"
+                android:layout_below="@id/search_image_slider"
+                android:layout_marginBottom="?android:actionBarSize"/>
+
+        </RelativeLayout>
+    </ScrollView>
+    <!--<androidx.recyclerview.widget.RecyclerView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_below="@id/search_image_slider"-->
+    <!--android:id="@+id/search_recycler_view"-->
+    <!--android:layout_height="wrap_content" />-->
+
+</RelativeLayout>
