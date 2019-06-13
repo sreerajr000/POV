@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:id="@+id/user_creation_layout"
+    android:gravity="center"
+    tools:context=".activity.UserCreationActivity">
+
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:id="@+id/user_progress"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="32dp"
+        android:progress="0" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:layout_margin="32dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Please fill in a few details for   "
+            android:textAlignment="center"
+            android:textSize="16sp" />
+        <ImageView
+            android:layout_width="24dp"
+            android:src="@drawable/logo_pov"
+            android:layout_height="24dp" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+
+        <RelativeLayout
+            android:id="@+id/new_user_image_layout"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp">
+
+            <com.makeramen.roundedimageview.RoundedImageView
+                android:id="@+id/new_user_image"
+                android:layout_width="120dp"
+                android:scaleType="centerCrop"
+                android:layout_height="120dp"
+                android:src="@color/colorPrimary"
+                app:riv_corner_radius="60dp" />
+
+            <ImageButton
+                android:id="@+id/user_image_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/roundcorner"
+                android:padding="4dp"
+                android:src="@drawable/ic_add_circle_white_24dp" />
+        </RelativeLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/username_textlayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/new_user_image_layout"
+            android:layout_centerHorizontal="true"
+            android:layout_marginHorizontal="32dp"
+            android:hint="Username"
+            app:startIconDrawable="@drawable/ic_person_black_24dp"
+            app:endIconMode="custom">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/username_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:textColor="@color/colorPrimaryText"
+                android:textSize="16sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/user_bio_textLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/username_textlayout"
+            android:layout_marginHorizontal="32dp"
+            android:hint="Bio"
+            app:startIconDrawable="@drawable/ic_info_black_24dp"
+            app:endIconMode="custom">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/bio_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="4dp"
+                android:maxLength="140"
+                android:textSize="16sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/user_create_next_button"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/user_bio_textLayout"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="16dp"
+            android:background="@color/colorPrimary"
+            android:text="Next"
+            android:textColor="@android:color/white" />
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:id="@+id/profile_image_gallery"
+        android:layout_gravity="bottom"
+        android:visibility="gone"
+        android:background="@color/background_black"
+        android:layout_height="100dp">
+    </androidx.recyclerview.widget.RecyclerView>
+</FrameLayout>

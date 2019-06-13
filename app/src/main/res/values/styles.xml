@@ -14,5 +14,13 @@
         <item name="android:background">@android:color/white</item>
     </style>
 
+    <style name="AppLoginTheme" parent="Theme.AccountKit">
+        <item name="com_accountkit_text_color">@color/colorPrimaryText</item>
+        <item name="com_accountkit_primary_color">@color/colorPrimary</item>
+        <item name="com_accountkit_input_accent_color">@color/colorAccent</item>
+        <item name="com_accountkit_secondary_text_color">@color/colorSecondaryText</item>
+        <item name="com_accountkit_status_bar_color">@color/colorPrimaryDark</item>
+    </style>
+
 
 </resources>

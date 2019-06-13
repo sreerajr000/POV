@@ -6,6 +6,9 @@
     <string name="title_profile">Profile</string>
     <string name="title_newpost">New Post</string>
 
+    <string name="facebook_app_id">444285123039765</string>
+    <string name="ACCOUNT_KIT_CLIENT_TOKEN">82d955a6baffb1c241b0800ff735a62e</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="newpost_hint">Ask something</string>
 </resources>
