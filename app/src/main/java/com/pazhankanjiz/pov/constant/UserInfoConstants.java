@@ -8,6 +8,7 @@ public class UserInfoConstants {
     public static final String USER_LOGGED_IN = "USER_LOGGED_IN";
     public static final String USERNAME = "USERNAME";
     public static final String BACKGROUND = "BACKGROUND";
+    public static final String USER_BIO = "USER_BIO";
 
     public static final String PARSE_APPLICATION_ID = "PoV";
     public static final String PARSE_SERVER = "http://192.168.43.49:1337/parse/";

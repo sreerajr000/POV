@@ -47,7 +47,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         /*
 
         //Animate text TODO remove
-        ObjectAnimator scaleDown = ObjectAnimator.ofPropertyValuesHolder(holder.image,
+        ObjectAnimator scaleDown = ObjectAnimator.ofPropertyValuesHolder(holder.background,
                 PropertyValuesHolder.ofFloat("scaleX", 1.2f),
                 PropertyValuesHolder.ofFloat("scaleY", 1.2f));
         scaleDown.setDuration(310);

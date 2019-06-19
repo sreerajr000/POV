@@ -19,6 +19,8 @@
 
             <ImageView
                 android:layout_width="match_parent"
+                android:scaleType="centerCrop"
+                android:id="@+id/new_post_background"
                 android:layout_height="match_parent"
                 android:background="@color/colorSecondaryText"
                 android:src="@drawable/test_background" />
@@ -31,7 +33,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:layout_margin="4dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="60dp"
         android:background="@android:color/transparent"
         android:hint="@string/newpost_hint"
         android:inputType="none"
@@ -58,22 +63,26 @@
         />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="56dp"
+        android:layout_width="40dp"
+        app:fabCustomSize="40dp"
         android:src="@drawable/ic_font_download_black_56dp"
         android:id="@+id/newpost_font_fab"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:focusable="true"
+        android:layout_alignParentBottom="true"
         android:clickable="true"
         android:layout_margin="16dp"
-        android:layout_height="56dp" />
+        android:layout_height="40dp" />
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="56dp"
+        android:layout_width="40dp"
+        app:fabCustomSize="40dp"
+        android:focusable="true"
         android:src="@drawable/ic_image_white_56dp"
         android:id="@+id/newpost_bg_fab"
         android:clickable="true"
-        android:layout_below="@id/newpost_font_fab"
-        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@id/newpost_font_fab"
+        android:layout_alignParentBottom="true"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:layout_height="56dp" />
+        android:layout_height="40dp" />
 </RelativeLayout>

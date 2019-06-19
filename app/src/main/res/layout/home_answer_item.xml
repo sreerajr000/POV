@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@android:color/black"
+    android:layout_height="match_parent">
+    <ImageView
+        android:layout_width="match_parent"
+        android:scaleType="centerCrop"
+        android:id="@+id/answer_background"
+        android:layout_height="match_parent" />
+    <ImageView
+        android:layout_width="32dp"
+        android:layout_alignParentTop="true"
+        android:layout_margin="8dp"
+        android:src="@drawable/logo_pov_white_shadow"
+        android:layout_alignParentEnd="true"
+        android:layout_height="32dp" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_margin="16dp"
+        android:gravity="center"
+        android:id="@+id/answer_content"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMaxTextSize="42sp"
+        android:autoSizeMinTextSize="12sp"
+        android:textColor="@android:color/white"
+        android:text="Sometimes i Think this is all just stupid"
+        android:shadowRadius="3"
+        android:shadowColor="@android:color/black"
+        android:shadowDy="1"
+        android:shadowDx="1"
+        android:layout_height="match_parent" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="8dp"
+        android:textColor="@android:color/white"
+        android:text=")JRFISIN"
+        android:id="@+id/answer_posted_by"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:layout_alignParentEnd="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_margin="4dp"
+            android:id="@+id/answer_rating"
+            android:textColor="@android:color/white"
+            android:text="0.0"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_margin="4dp"
+            android:tint="@color/colorAccent"
+            android:src="@drawable/ic_stars_black_24dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</RelativeLayout>

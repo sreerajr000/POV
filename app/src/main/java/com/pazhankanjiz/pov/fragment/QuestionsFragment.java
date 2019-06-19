@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,11 +16,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.pazhankanjiz.pov.R;
 import com.pazhankanjiz.pov.adapter.ProfileQuestionAdapter;
+import com.pazhankanjiz.pov.constant.DatabaseConstants;
 import com.pazhankanjiz.pov.model.ProfileQuestionModel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
+import static com.pazhankanjiz.pov.activity.MainActivity.LOGGED_IN_USER;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -79,10 +89,24 @@ public class QuestionsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         recyclerView = view.findViewById(R.id.questions_recycler_view);
 
-        ProfileQuestionAdapter adapter = new ProfileQuestionAdapter(getContext(), Arrays.asList(
-                new ProfileQuestionModel(R.drawable.ic_home_black_24dp, "abc"), new ProfileQuestionModel(R.drawable.ic_notifications_black_24dp, "cde")
-        ));
-        recyclerView.setAdapter(adapter);
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(DatabaseConstants.CLASS_QUESTION);
+
+        query.whereEqualTo(DatabaseConstants.POSTED_BY, LOGGED_IN_USER)
+                .findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> objects, ParseException e) {
+                        List<ProfileQuestionModel> profileQuestionModels = new ArrayList<>();
+                        for (ParseObject object : objects) {
+                            ProfileQuestionModel model = new ProfileQuestionModel(object.getInt(DatabaseConstants.BACKGROUND),
+                                    object.getString(DatabaseConstants.CONTENT), object.getInt(DatabaseConstants.FONT));
+                            profileQuestionModels.add(model);
+                        }
+                        ProfileQuestionAdapter adapter = new ProfileQuestionAdapter(getContext(), profileQuestionModels);
+                        recyclerView.setAdapter(adapter);
+
+                    }
+                });
+
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
     }
 

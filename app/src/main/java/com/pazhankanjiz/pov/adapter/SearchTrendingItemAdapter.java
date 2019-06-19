@@ -40,7 +40,7 @@ public class SearchTrendingItemAdapter extends RecyclerView.Adapter<SearchTrendi
         Glide.with(holder.image)
                 .load(searchTrendingItemModel.getUrl())
                 .into(holder.image);
-//        holder.name.setText(searchTrendingItemModel.getTitle());
+//        holder.content.setText(searchTrendingItemModel.getTitle());
     }
 
     @Override
@@ -50,11 +50,11 @@ public class SearchTrendingItemAdapter extends RecyclerView.Adapter<SearchTrendi
 
     class SearchTrendingItemViewHolder extends RecyclerView.ViewHolder {
         ImageView image;
-//        TextView name;
+//        TextView content;
 
         public SearchTrendingItemViewHolder(@NonNull View itemView) {
             super(itemView);
-//            name = itemView.findViewById(R.id.search_trending_item_name);
+//            content = itemView.findViewById(R.id.search_trending_item_name);
             image = itemView.findViewById(R.id.search_trending_item_image);
         }
     }

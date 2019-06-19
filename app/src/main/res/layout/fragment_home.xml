@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,12 +8,125 @@
     tools:context=".fragment.HomeFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:layout_marginBottom="?android:actionBarSize"
-        >
+        android:clipChildren="false">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/card_view_info"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_info_outline_primary_24dp"
+            android:visibility="visible"
+            app:backgroundTint="@android:color/white"
+            app:fabCustomSize="36dp"
+            app:rippleColor="@color/colorAccent"
+            tools:visibility="visible" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="100dp"
+            android:id="@+id/home_header"
+            android:layout_alignParentTop="true"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/for_you_textview"
+                android:layout_width="wrap_content"
+                android:textSize="24sp"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:shadowColor="@color/background_black"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:fontFamily="cursive"
+                android:textStyle="bold"
+                android:shadowRadius="3"
+                android:text="For you"
+                android:textColor="@android:color/white" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="|"
+                android:textSize="24sp"
+                android:textColor="@android:color/white"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/following_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:shadowColor="@color/background_black"
+                android:shadowDx="1"
+                android:textSize="24sp"
+                android:fontFamily="cursive"
+                android:textStyle="bold"
+                android:shadowDy="1"
+                android:shadowRadius="3"
+                android:text="Following"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/button_container"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="8dp"
+            android:clipChildren="false"
+            android:elevation="100dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/skip_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/rewind_button"
+                android:layout_toLeftOf="@+id/rewind_button"
+                android:clickable="true"
+                android:src="@drawable/skip_red_24dp"
+                app:backgroundTint="@android:color/white"
+                app:fabSize="auto"
+                app:rippleColor="#22ED7563" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/rewind_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="32dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginRight="32dp"
+                android:clickable="true"
+                android:src="@drawable/rewind_blue_24dp"
+                app:backgroundTint="@android:color/white"
+                app:fabSize="mini"
+                app:rippleColor="#225BC9FA" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/like_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_toEndOf="@+id/rewind_button"
+                android:layout_toRightOf="@+id/rewind_button"
+                android:clickable="true"
+                android:src="@drawable/like_green_24dp"
+                app:backgroundTint="@android:color/white"
+                app:fabSize="auto"
+                app:rippleColor="#226FE2B3" />
+
+        </RelativeLayout>
 
         <com.yuyakaido.android.cardstackview.CardStackView
             android:id="@+id/card_stack_view"
@@ -23,5 +137,5 @@
 
 
         </com.yuyakaido.android.cardstackview.CardStackView>
-    </LinearLayout>
+    </RelativeLayout>
 </FrameLayout>

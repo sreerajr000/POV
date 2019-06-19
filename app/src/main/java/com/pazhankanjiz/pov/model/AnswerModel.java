@@ -7,6 +7,24 @@ public class AnswerModel {
     private Long likeCount;
     private Long dislikeCount;
     private Integer rating;
+    private Integer font;
+    private Integer background;
+
+    public Integer getFont() {
+        return font;
+    }
+
+    public void setFont(Integer font) {
+        this.font = font;
+    }
+
+    public Integer getBackground() {
+        return background;
+    }
+
+    public void setBackground(Integer background) {
+        this.background = background;
+    }
 
     public String getContent() {
         return content;
@@ -56,12 +74,14 @@ public class AnswerModel {
         this.rating = rating;
     }
 
-    public AnswerModel(String content, String id, String postedBy, Long likeCount, Long dislikeCount, Integer rating) {
+    public AnswerModel(String content, String id, String postedBy, Long likeCount, Long dislikeCount, Integer rating, Integer font, Integer background) {
         this.content = content;
         this.id = id;
         this.postedBy = postedBy;
         this.likeCount = likeCount;
         this.dislikeCount = dislikeCount;
         this.rating = rating;
+        this.font = font;
+        this.background = background;
     }
 }

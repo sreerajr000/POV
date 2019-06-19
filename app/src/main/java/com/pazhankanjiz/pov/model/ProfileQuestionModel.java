@@ -1,12 +1,22 @@
 package com.pazhankanjiz.pov.model;
 
 public class ProfileQuestionModel {
-    int image;
-    String text;
+    private int image;
+    private int font;
+    private String text;
 
-    public ProfileQuestionModel(int image, String text) {
+    public ProfileQuestionModel(int image, String text, int font) {
         this.image = image;
         this.text = text;
+        this.font = font;
+    }
+
+    public int getFont() {
+        return font;
+    }
+
+    public void setFont(int font) {
+        this.font = font;
     }
 
     public int getImage() {

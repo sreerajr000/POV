@@ -1,27 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="250dp"
     android:orientation="vertical">
 
 
     <androidx.cardview.widget.CardView
-        android:layout_margin="8dp"
+        android:layout_margin="1dp"
         android:elevation="1dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <ImageView
+            android:layout_width="match_parent"
+            android:scaleType="centerCrop"
+            android:id="@+id/profile_question_background"
+            android:layout_height="match_parent" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/profile_question_image"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
 
             <TextView
                 android:id="@+id/profile_question_text"
+                android:layout_margin="8dp"
+                android:textSize="24sp"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 

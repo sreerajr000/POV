@@ -1,13 +1,19 @@
 package com.pazhankanjiz.pov.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
@@ -54,7 +60,6 @@ public class SplashActivity extends AppCompatActivity {
     private ImageView logo;
 
     public static int APP_REQUEST_CODE = 99;
-
 
 
     public void logOut() {
@@ -123,16 +128,19 @@ public class SplashActivity extends AppCompatActivity {
     }
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_splash);
 
 
-        Parse.initialize(new Parse.Configuration.Builder(this)
-                .applicationId(PARSE_APPLICATION_ID).server(PARSE_SERVER).build());
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(SplashActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+        }
+
+        ParseInitializer initializer = new ParseInitializer();
+        initializer.execute();
 
         logo = findViewById(R.id.splash_screen_logo);
         ObjectAnimator scaleDown = ObjectAnimator.ofPropertyValuesHolder(logo,
@@ -145,8 +153,6 @@ public class SplashActivity extends AppCompatActivity {
         scaleDown.start();
 
         AccessToken accessToken = AccountKit.getCurrentAccessToken();
-
-        SharedPreferences.Editor editor = getSharedPreferences(USER_INFO, MODE_PRIVATE).edit();
 
         if (accessToken != null && getSharedPreferences(USER_INFO, MODE_PRIVATE).getBoolean(USER_LOGGED_IN, false)) {
             //Handle Returning User
@@ -163,5 +169,16 @@ public class SplashActivity extends AppCompatActivity {
             phoneLogin();
         }
 
+
+    }
+
+    private class ParseInitializer extends AsyncTask {
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            Parse.initialize(new Parse.Configuration.Builder(getApplicationContext())
+                    .applicationId(PARSE_APPLICATION_ID).server(PARSE_SERVER).build());
+            return null;
+        }
     }
 }

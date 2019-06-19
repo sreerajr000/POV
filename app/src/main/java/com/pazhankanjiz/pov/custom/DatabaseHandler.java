@@ -11,6 +11,9 @@ import com.pazhankanjiz.pov.model.QuestionModel;
 
 import static com.pazhankanjiz.pov.constant.DatabaseConstants.*;
 public class DatabaseHandler extends SQLiteOpenHelper {
+
+
+
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         //3rd argument to be passed is CursorFactory instance
@@ -19,19 +22,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Creating Tables
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_QUESTIONS_TABLE = "CREATE TABLE " + TABLE_QUESTIONS + "("
+        String CREATE_QUESTIONS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_QUESTIONS + "("
                 + ID + " VARCHAR PRIMARY KEY," + CONTENT + " VARCHAR(255),"
                 + POSTED_BY + " VARCHAR," + BACKGROUND + " INTEGER,"
                 + LIKE + " INTEGER," + DISLIKE + " INTEGER," + RATING
                 + " INTEGER," + HASHTAG + " VARCHAR" + ")";
 
-        String CREATE_ANSWERS_TABLE = "CREATE TABLE " + TABLE_QUESTIONS + "("
+        String CREATE_ANSWERS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_QUESTIONS + "("
                 + ID + " VARCHAR PRIMARY KEY," + CONTENT + " VARCHAR(255),"
                 + POSTED_BY + " VARCHAR," + LIKE + " INTEGER," + DISLIKE
                 + " INTEGER," + RATING + " INTEGER"+ ")";
 
+        String CREATE_LIKE_DISLIKE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_LIKE_DISLIKE + "("
+                + ID + " VARCHAR PRIMARY KEY," + STATUS + " INTEGER)";
+
         db.execSQL(CREATE_QUESTIONS_TABLE);
         db.execSQL(CREATE_ANSWERS_TABLE);
+        db.execSQL(CREATE_LIKE_DISLIKE_TABLE);
     }
 
     // Upgrading database
@@ -40,11 +47,36 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_QUESTIONS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ANSWERS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LIKE_DISLIKE);
+
 
         // Create tables again
         onCreate(db);
     }
 
+    public void addLikeDislike(String id, int status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(ID, id);
+        values.put(STATUS, status);
+
+        db.insert(TABLE_LIKE_DISLIKE, null, values);
+        db.close();
+    }
+
+
+    public int getLikeDislikeStatus(String id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_LIKE_DISLIKE, new String[] {ID, STATUS}, ID + "=?", new String[]{id}, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            int status = cursor.getInt(1);
+            cursor.close();
+            return status;
+        } else if (cursor != null) {
+            cursor.close();
+        }
+        return NOT_FOUND;
+    }
 
     public void addAnswer(AnswerModel answer) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -60,20 +92,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public AnswerModel getAnswer(String id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.query(TABLE_ANSWERS, new String[] { ID,
-                        CONTENT, POSTED_BY, LIKE, DISLIKE, RATING}, ID + "=?",
-                new String[] { String.valueOf(id) }, null, null, null, null);
-        if (cursor != null)
-            cursor.moveToFirst();
-
-        AnswerModel answer = new AnswerModel(cursor.getString(1),
-                cursor.getString(0), cursor.getString(2), cursor.getLong(3),
-                cursor.getLong(4), cursor.getInt(5));
-        return answer;
-    }
+//    public AnswerModel getAnswer(String id) {
+//        SQLiteDatabase db = this.getReadableDatabase();
+//
+//        Cursor cursor = db.query(TABLE_ANSWERS, new String[] { ID,
+//                        CONTENT, POSTED_BY, LIKE, DISLIKE, RATING}, ID + "=?",
+//                new String[] { String.valueOf(id) }, null, null, null, null);
+//        if (cursor != null)
+//            cursor.moveToFirst();
+//
+//        AnswerModel answer = new AnswerModel(cursor.getString(1),
+//                cursor.getString(0), cursor.getString(2), cursor.getLong(3),
+//                cursor.getLong(4), cursor.getInt(5));
+//        return answer;
+//    }
 
     public void addQuestion(QuestionModel question) {
         SQLiteDatabase db = this.getWritableDatabase();

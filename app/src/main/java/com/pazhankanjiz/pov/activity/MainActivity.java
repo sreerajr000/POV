@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.facebook.accountkit.AccountKit;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.pazhankanjiz.pov.constant.DatabaseConstants;
 import com.pazhankanjiz.pov.custom.CustomViewPager;
 import com.pazhankanjiz.pov.R;
 import com.pazhankanjiz.pov.adapter.ViewPagerAdapter;
@@ -16,15 +18,19 @@ import com.pazhankanjiz.pov.fragment.NewPostFragment;
 import com.pazhankanjiz.pov.fragment.NotificationFragment;
 import com.pazhankanjiz.pov.fragment.ProfileFragment;
 import com.pazhankanjiz.pov.fragment.SearchFragment;
+import com.pazhankanjiz.pov.model.HomeCardModel;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.transition.TransitionManager;
 import androidx.viewpager.widget.ViewPager;
 
+import android.os.StrictMode;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -37,9 +43,19 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
+import java.util.concurrent.FutureTask;
 
+import bolts.Task;
+
+import static com.pazhankanjiz.pov.constant.FragmentConstants.FRAGMENT_HOME;
+import static com.pazhankanjiz.pov.constant.FragmentConstants.FRAGMENT_NEWPOST;
+import static com.pazhankanjiz.pov.constant.FragmentConstants.FRAGMENT_NOTIFICATION;
+import static com.pazhankanjiz.pov.constant.FragmentConstants.FRAGMENT_PROFILE;
+import static com.pazhankanjiz.pov.constant.FragmentConstants.FRAGMENT_SEARCH;
 import static com.pazhankanjiz.pov.constant.UserInfoConstants.ACCOUNT_ID;
 import static com.pazhankanjiz.pov.constant.UserInfoConstants.PHONE_NUMBER_STRING;
 import static com.pazhankanjiz.pov.constant.UserInfoConstants.USER_INFO;
@@ -50,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
     private static final String TAG = "MainActivity";
 
     private CustomViewPager viewPager;
+
+    public static String LOGGED_IN_USER = "";
 
     private boolean saveToHistory;
     private int currentPage = 0;
@@ -63,6 +81,10 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
     private SearchView mSearchView;
     private SearchView.SearchAutoComplete searchAutoComplete;
 
+    private SharedPreferences sharedPreferences;
+
+
+    private Fragment homeFragment, searchFragment, newPostFragment, notificationFragment, profileFragment;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -134,7 +156,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
     }
 
 
-
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -166,7 +187,21 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        navView  = findViewById(R.id.nav_view);
+
+        // TODO Strict mode remove
+//        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().detectDiskReads().detectDiskWrites().detectNetwork()
+//                .penaltyDeath().penaltyLog().build());
+//        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+//                .detectLeakedSqlLiteObjects()
+//                .detectLeakedClosableObjects()
+//                .penaltyDeath()
+//                .penaltyLog()
+//                .build());
+
+        navView = findViewById(R.id.nav_view);
+
+        Initializer init = new Initializer();
+        init.execute();
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -250,13 +285,19 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, valueInDp, metrics);
     }
 
+
     private void addTabs(ViewPager viewPager) {
+        homeFragment = new HomeFragment();
+        searchFragment = new SearchFragment();
+        newPostFragment = new NewPostFragment(viewPager);
+        notificationFragment = new NotificationFragment();
+        profileFragment = new ProfileFragment();
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFrag(new HomeFragment(), "HOME");
-        adapter.addFrag(new SearchFragment(), "SEARCH");
-        adapter.addFrag(new NewPostFragment(), "NEWPOST");
-        adapter.addFrag(new NotificationFragment(), "NOTIFICATION");
-        adapter.addFrag(new ProfileFragment(), "PROFILE");
+        adapter.addFrag(homeFragment, FRAGMENT_HOME);
+        adapter.addFrag(searchFragment, FRAGMENT_SEARCH);
+        adapter.addFrag(newPostFragment, FRAGMENT_NEWPOST);
+        adapter.addFrag(notificationFragment, FRAGMENT_NOTIFICATION);
+        adapter.addFrag(profileFragment, FRAGMENT_PROFILE);
         viewPager.setAdapter(adapter);
     }
 
@@ -291,6 +332,51 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
             navView.setVisibility(View.GONE);
         } else if (!navView.isShown() && visible) {
             navView.setVisibility(View.VISIBLE);
+        }
+    }
+
+
+    public void addFirstHome(int size, HomeCardModel item) {
+        ((HomeFragment) homeFragment).addFirst(size, item);
+    }
+
+
+    public void paginateHome(List secondList) {
+        ((HomeFragment) homeFragment).paginate(secondList);
+    }
+
+    public void reloadHome(List newList) {
+        ((HomeFragment) homeFragment).reload(newList);
+    }
+
+    public void addLastHome(int size, List<HomeCardModel> modelList) {
+        ((HomeFragment) homeFragment).addLast(size, modelList);
+    }
+
+    public void removeFirstHome(int size) {
+        ((HomeFragment) homeFragment).removeFirst(size);
+    }
+
+    public void removeLastHome(int size) {
+        ((HomeFragment) homeFragment).removeLast(size);
+    }
+
+    public void replaceHome() {
+        ((HomeFragment) homeFragment).replace();
+    }
+
+    public void swapHome() {
+        ((HomeFragment) homeFragment).swap();
+    }
+
+
+    private class Initializer extends AsyncTask {
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            sharedPreferences = getSharedPreferences(USER_INFO, MODE_PRIVATE);
+            LOGGED_IN_USER = sharedPreferences.getString(DatabaseConstants.ID, "");
+            return null;
         }
     }
 }

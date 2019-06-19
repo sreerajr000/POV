@@ -10,10 +10,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.pazhankanjiz.pov.R;
 import com.pazhankanjiz.pov.model.ProfileQuestionModel;
 
 import java.util.List;
+
+import static com.pazhankanjiz.pov.constant.ResourceConstants.BACKGROUNDS;
+import static com.pazhankanjiz.pov.constant.ResourceConstants.FONTS;
 
 public class ProfileQuestionAdapter extends RecyclerView.Adapter<ProfileQuestionAdapter.ProfileQuestionViewHolder> {
     private List<ProfileQuestionModel> profileQuestionModelList;
@@ -36,8 +40,14 @@ public class ProfileQuestionAdapter extends RecyclerView.Adapter<ProfileQuestion
     @Override
     public void onBindViewHolder(@NonNull ProfileQuestionViewHolder holder, int position) {
         ProfileQuestionModel profileQuestionModel = profileQuestionModelList.get(position);
-        holder.image.setImageResource(profileQuestionModel.getImage());
-        holder.text.setText(profileQuestionModel.getText());
+        Glide.with(holder.background)
+                .load(BACKGROUNDS.get(profileQuestionModel.getImage()))
+                .into(holder.background);
+        String content = profileQuestionModel.getText().length() > 40 ?
+                profileQuestionModel.getText().substring(0, 40) + "..." :
+                profileQuestionModel.getText();
+        holder.text.setText(content);
+        holder.text.setTypeface(FONTS.get(profileQuestionModel.getFont()));
     }
 
     @Override
@@ -48,11 +58,11 @@ public class ProfileQuestionAdapter extends RecyclerView.Adapter<ProfileQuestion
     class ProfileQuestionViewHolder extends RecyclerView.ViewHolder {
 
         TextView text;
-        ImageView image;
+        ImageView background;
         public ProfileQuestionViewHolder(@NonNull View itemView) {
             super(itemView);
             text = itemView.findViewById(R.id.profile_question_text);
-            image = itemView.findViewById(R.id.profile_question_image);
+            background = itemView.findViewById(R.id.profile_question_background);
         }
     }
 

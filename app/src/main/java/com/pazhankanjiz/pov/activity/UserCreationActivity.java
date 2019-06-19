@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -38,14 +39,21 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.pazhankanjiz.pov.R;
 import com.pazhankanjiz.pov.adapter.ProfileImageGalleryAdapter;
+import com.pazhankanjiz.pov.constant.DatabaseConstants;
+import com.pazhankanjiz.pov.constant.ResourceConstants;
 
 import java.util.Arrays;
 import java.util.List;
 
+import bolts.Continuation;
+import bolts.Task;
+
+import static com.pazhankanjiz.pov.constant.DatabaseConstants.ID;
 import static com.pazhankanjiz.pov.constant.UserInfoConstants.ACCOUNT_ID;
 import static com.pazhankanjiz.pov.constant.UserInfoConstants.BACKGROUND;
 import static com.pazhankanjiz.pov.constant.UserInfoConstants.PHONE_NUMBER_STRING;
 import static com.pazhankanjiz.pov.constant.UserInfoConstants.USERNAME;
+import static com.pazhankanjiz.pov.constant.UserInfoConstants.USER_BIO;
 import static com.pazhankanjiz.pov.constant.UserInfoConstants.USER_INFO;
 import static com.pazhankanjiz.pov.constant.UserInfoConstants.USER_LOGGED_IN;
 
@@ -60,20 +68,17 @@ public class UserCreationActivity extends AppCompatActivity {
     private ImageButton profileImageButton;
     private RecyclerView profileImageGallery;
 
+
     private int backgroundIndex = -1;
 
     private ProgressDialog progressDialog;
-    private List<String> imageUrls = Arrays.asList("https://source.unsplash.com/Xq1ntWruZQI/600x800",
-            "https://source.unsplash.com/NYyCqdBOKwc/600x800",
-            "https://source.unsplash.com/buF62ewDLcQ/600x800",
-            "https://source.unsplash.com/Xq1ntWruZQI/600x800",
-            "https://source.unsplash.com/NYyCqdBOKwc/600x800",
-            "https://source.unsplash.com/buF62ewDLcQ/600x800");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_creation);
+
         userName = findViewById(R.id.username_edit_text);
         userBio = findViewById(R.id.bio_edit_text);
         profileImage = findViewById(R.id.new_user_image);
@@ -85,19 +90,32 @@ public class UserCreationActivity extends AppCompatActivity {
         userBio.addTextChangedListener(progressChangeListener);
         profileImageGallery = findViewById(R.id.profile_image_gallery);
 
-        findViewById(R.id.user_creation_layout).setOnClickListener(new View.OnClickListener() {
+        userName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onClick(View v) {
-                if (profileImageGallery.getVisibility() == View.VISIBLE) {
-                    Animation fadeOut = AnimationUtils.loadAnimation(UserCreationActivity.this, R.anim.fade_out_down);
-                    profileImageGallery.startAnimation(fadeOut);
-                    profileImageGallery.setVisibility(View.GONE);
-                }
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus)
+                    hideProfileImageGallery();
             }
         });
 
-        profileImageGallery.setAdapter(new ProfileImageGalleryAdapter(UserCreationActivity.this, imageUrls, new View.OnClickListener() {
+        userBio.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus)
+                    hideProfileImageGallery();
+            }
+        });
+
+        findViewById(R.id.user_creation_layout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideProfileImageGallery();
+            }
+        });
+
+        profileImageGallery.setAdapter(new ProfileImageGalleryAdapter(UserCreationActivity.this, ResourceConstants.PROFILE_IMAGES, new View.OnClickListener() {
             View prevSelectedImage = null;
+
             @Override
             public void onClick(View v) {
                 int position = profileImageGallery.indexOfChild(v);
@@ -108,7 +126,7 @@ public class UserCreationActivity extends AppCompatActivity {
                 prevSelectedImage = v;
                 Log.d(TAG, "onClick: " + position);
                 Glide.with(profileImage)
-                        .load(imageUrls.get(position))
+                        .load(ResourceConstants.PROFILE_IMAGES.get(position))
                         .into(profileImage);
                 backgroundIndex = position;
                 updateProgress();
@@ -119,9 +137,13 @@ public class UserCreationActivity extends AppCompatActivity {
         profileImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                profileImageGallery.setVisibility(View.VISIBLE);
-                Animation fadeIn = AnimationUtils.loadAnimation(UserCreationActivity.this, R.anim.fade_in_down);
-                profileImageGallery.startAnimation(fadeIn);
+                if (profileImageGallery.getVisibility() != View.VISIBLE) {
+                    profileImageGallery.setVisibility(View.VISIBLE);
+                    Animation fadeIn = AnimationUtils.loadAnimation(UserCreationActivity.this, R.anim.fade_in_down);
+                    profileImageGallery.startAnimation(fadeIn);
+                }
+                userName.clearFocus();
+                userBio.clearFocus();
             }
         });
 
@@ -137,7 +159,7 @@ public class UserCreationActivity extends AppCompatActivity {
                     userBio.setError("This field cannot be blank!");
                     ret = true;
                 }
-                if (null == profileImage.getDrawable()) {
+                if (backgroundIndex < 0) {
                     new AlertDialog.Builder(UserCreationActivity.this)
                             .setMessage("Profile Image cannot be blank")
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -150,7 +172,7 @@ public class UserCreationActivity extends AppCompatActivity {
                 }
 
                 if (ret) return;
-                progressDialog = ProgressDialog.show(UserCreationActivity.this, "","Please Wait ...");
+                progressDialog = ProgressDialog.show(UserCreationActivity.this, "", "Please Wait ...");
                 saveUserInfo();
             }
         });
@@ -203,14 +225,6 @@ public class UserCreationActivity extends AppCompatActivity {
 
                 // Get phone number
                 final PhoneNumber phoneNumber = account.getPhoneNumber();
-                if (phoneNumber != null) {
-                    String phoneNumberString = phoneNumber.toString();
-                    SharedPreferences.Editor editor = getSharedPreferences(USER_INFO, MODE_PRIVATE).edit();
-                    editor.putString(ACCOUNT_ID, accountKitId);
-                    editor.putString(PHONE_NUMBER_STRING, phoneNumberString);
-                    editor.putBoolean(USER_LOGGED_IN, true);
-                    editor.apply();
-                }
 
                 //Save it in parse server TODO do it after user details are entered
                 ParseQuery<ParseObject> userQuery = ParseQuery.getQuery("User");
@@ -219,15 +233,57 @@ public class UserCreationActivity extends AppCompatActivity {
                 userQuery.findInBackground(new FindCallback<ParseObject>() {
                     @Override
                     public void done(List<ParseObject> objects, ParseException e) {
+
+
                         if (objects.isEmpty()) {
-                            ParseObject userObject = new ParseObject("User");
+
+                            final ParseObject userObject = new ParseObject("User");
                             userObject.put(ACCOUNT_ID, accountKitId);
                             userObject.put(PHONE_NUMBER_STRING, phoneNumber.toString());
                             userObject.put(USERNAME, userName.getText().toString());
                             userObject.put(BACKGROUND, backgroundIndex);
-                            userObject.saveInBackground();
+                            userObject.put(USER_BIO, userBio.getText().toString());
+                            userObject.saveInBackground().onSuccess(new Continuation<Void, Object>() {
+                                @Override
+                                public Object then(Task<Void> task) throws Exception {
+                                    if (phoneNumber != null) {
+                                        String phoneNumberString = phoneNumber.toString();
+                                        SharedPreferences.Editor editor = getSharedPreferences(USER_INFO, MODE_PRIVATE).edit();
+                                        editor.putString(ACCOUNT_ID, accountKitId);
+                                        editor.putString(PHONE_NUMBER_STRING, phoneNumberString);
+                                        editor.putBoolean(USER_LOGGED_IN, true);
+                                        editor.putString(USERNAME, userName.getText().toString());
+                                        editor.putString(USER_BIO, userBio.getText().toString());
+                                        editor.putString(ID, userObject.getObjectId());
+                                        editor.putInt(BACKGROUND, backgroundIndex);
+                                        editor.apply();
+                                    }
+                                    return null;
+                                }
+                            });
+
                         } else {
+                            final ParseObject userObject = new ParseObject("User");
+                            userObject.put(ACCOUNT_ID, accountKitId);
+                            userObject.put(PHONE_NUMBER_STRING, phoneNumber.toString());
+                            userObject.put(USERNAME, userName.getText().toString());
+                            userObject.put(BACKGROUND, backgroundIndex);
+                            userObject.put(USER_BIO, userBio.getText().toString());
+                            userObject.setObjectId(objects.get(0).getObjectId());
+                            userObject.saveInBackground();
+
+
                             Log.d(TAG, "onSuccess: " + objects);
+                            String phoneNumberString = phoneNumber.toString();
+                            SharedPreferences.Editor editor = getSharedPreferences(USER_INFO, MODE_PRIVATE).edit();
+                            editor.putString(ACCOUNT_ID, accountKitId);
+                            editor.putString(PHONE_NUMBER_STRING, phoneNumberString);
+                            editor.putBoolean(USER_LOGGED_IN, true);
+                            editor.putString(USERNAME, userName.getText().toString());
+                            editor.putString(USER_BIO, userBio.getText().toString());
+                            editor.putString(ID, objects.get(0).getObjectId());
+                            editor.putInt(BACKGROUND, objects.get(0).getInt(DatabaseConstants.BACKGROUND));
+                            editor.apply();
                         }
                         progressDialog.dismiss();
                         Intent intent = new Intent(UserCreationActivity.this, MainActivity.class);
@@ -245,5 +301,13 @@ public class UserCreationActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void hideProfileImageGallery() {
+        if (profileImageGallery.getVisibility() == View.VISIBLE) {
+            Animation fadeOut = AnimationUtils.loadAnimation(UserCreationActivity.this, R.anim.fade_out_down);
+            profileImageGallery.startAnimation(fadeOut);
+            profileImageGallery.setVisibility(View.GONE);
+        }
     }
 }
